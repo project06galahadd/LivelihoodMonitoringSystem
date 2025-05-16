@@ -83,6 +83,28 @@ if(isset($_POST['change_password'])){
     header('location: profile.php');
     exit();
 }
+
+// Get member information
+$query = "SELECT m.*, u.email, u.username 
+          FROM tbl_members m 
+          JOIN tbl_users u ON m.user_id = u.user_id 
+          WHERE m.user_id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$member = $result->fetch_assoc();
+
+// Get enrolled programs
+$query = "SELECT p.*, ep.enrollment_date, ep.status as enrollment_status 
+          FROM tbl_enrolled_programs ep 
+          JOIN tbl_programs p ON ep.program_id = p.program_id 
+          WHERE ep.user_id = ? 
+          ORDER BY ep.enrollment_date DESC";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$enrolled_programs = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -90,7 +112,7 @@ if(isset($_POST['change_password'])){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Settings | MSWD</title>
+    <title>My Profile - Livelihood Monitoring System</title>
     <link rel="icon" type="image/png" href="/LivelihoodMonitoringSystem/dist/img/Logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -142,6 +164,23 @@ if(isset($_POST['change_password'])){
         .alert-danger { background: var(--danger-color); color: #fff; }
         .profile-image { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 1.5rem; border: 5px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         @media (max-width: 768px) { .main-sidebar { transform: translateX(-100%); } .sidebar-open .main-sidebar { transform: translateX(0); } .content-wrapper { margin-left: 0; } }
+        .profile-header {
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .profile-card {
+            transition: transform 0.3s;
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+        }
+        .program-badge {
+            font-size: 0.8rem;
+            padding: 0.5rem;
+            margin: 0.2rem;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
