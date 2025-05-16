@@ -69,10 +69,10 @@ try {
 
     // Get recent activities with prepared statement
     $stmt = $conn->prepare("
-        SELECT m.*, u.username, u.email 
-        FROM tbl_members m 
-        JOIN tbl_users u ON m.user_id = u.user_id 
-        ORDER BY m.DATE_OF_APPLICATION DESC 
+        SELECT m.*, u.username, u.email
+        FROM tbl_members m
+        JOIN tbl_users u ON m.user_id = u.user_id
+        ORDER BY m.DATE_OF_APPLICATION DESC
         LIMIT 5
     ");
     $stmt->execute();
@@ -80,8 +80,8 @@ try {
 
     // Get program distribution with prepared statement
     $stmt = $conn->prepare("
-        SELECT DESIRED_LIVELIHOOD_PROGRAM, COUNT(*) as count 
-        FROM tbl_members 
+        SELECT DESIRED_LIVELIHOOD_PROGRAM, COUNT(*) as count
+        FROM tbl_members
         GROUP BY DESIRED_LIVELIHOOD_PROGRAM
     ");
     $stmt->execute();
@@ -89,11 +89,11 @@ try {
 
     // Get recent enrollments
     $stmt = $conn->prepare("
-        SELECT e.*, u.username, p.program_name 
-        FROM tbl_enrolled_programs e 
-        JOIN tbl_users u ON e.user_id = u.user_id 
-        JOIN tbl_programs p ON e.program_id = p.program_id 
-        ORDER BY e.enrollment_date DESC 
+        SELECT e.*, u.username, p.program_name
+        FROM tbl_enrolled_programs e
+        JOIN tbl_users u ON e.user_id = u.user_id
+        JOIN tbl_programs p ON e.program_id = p.program_id
+        ORDER BY e.enrollment_date DESC
         LIMIT 5
     ");
     $stmt->execute();
