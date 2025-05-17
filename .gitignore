@@ -20,21 +20,40 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+*.env
+config.php
+config.inc.php
+wp-config.php
+configuration.php
 
 # Cache and temporary files
 *.cache
 *.tmp
 *.temp
+*.swp
+*.swo
+*~
 
 # Database files
 *.sql
 *.sqlite
 *.db
+*.sqlite3
+*.sqlite-journal
+*.frm
+*.myd
+*.myi
+*.ibd
 
 # Backup files
 *.bak
 *.backup
 *~
+*.old
+*.orig
+*.rej
+*.bak.*
+*.backup.*
 
 # Compiled files
 *.com
@@ -43,6 +62,11 @@ Thumbs.db
 *.exe
 *.o
 *.so
+*.pyc
+*.pyo
+*.pyd
+*.obj
+*.lib
 
 # Package files
 *.7z
@@ -52,4 +76,59 @@ Thumbs.db
 *.jar
 *.rar
 *.tar
-*.zip 
+*.zip
+
+# SSH Keys and Certificates
+*_rsa
+*_dsa
+*_ed25519
+*_ecdsa
+*.pem
+*.key
+id_*
+*.crt
+*.cer
+*.der
+*.p12
+*.pfx
+*.p7b
+*.p7c
+*.p7s
+*.crt
+*.csr
+*.srl
+*.jks
+*.keystore
+*.truststore
+*.p8
+*.p8e
+*.key.pub
+*.pub
+C6GALAHADD
+
+# Session and Cookie files
+*.sess
+*.session
+*.cookie
+sessions/
+cookies/
+
+# Log files
+*.log
+logs/
+error_log
+access_log
+debug.log
+php_errors.log
+
+# Upload directories
+uploads/
+temp/
+tmp/
+cache/
+
+# Configuration backups
+*.conf.bak
+*.config.bak
+*.ini.bak
+*.php.bak

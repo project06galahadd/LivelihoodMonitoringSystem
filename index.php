@@ -1,6 +1,6 @@
-<?php 
+<?php
 session_start();
-include "header.php"; 
+include "header.php";
 ?>
 
 <body class="overlay page__landing">
@@ -14,7 +14,7 @@ include "header.php";
       </section>
       <?php if (isset($_SESSION['registration_success'])): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-          <?php 
+          <?php
           echo $_SESSION['registration_success'];
           unset($_SESSION['registration_success']);
           ?>
@@ -24,8 +24,6 @@ include "header.php";
         </div>
       <?php endif; ?>
       <div class="container mt-5">
-
-        <!---time--->
         <div class="col-md-12">
           <section class="text-center">
             <div class="container" data-aos="zoom-out" data-aos-delay="100"><br><br>
@@ -49,19 +47,16 @@ include "header.php";
                 The MSWD Livelihood Monitoring System is a capability-building program for poor, <br>vulnerable and marginalized households and communities <br> to help improve their socio-economic conditions through accessing and <br> acquiring necessary assets to engage in and maintain thriving livelihoods.
               </p>
 
-              <!-- Only REGISTER and LOGIN buttons -->
               <a class="btn btn-danger" href="register_form.php">REGISTER</a>
               <form action="login_selection.php" method="get" style="display: inline;">
                 <button type="submit" class="btn btn-primary">LOGIN</button>
               </form>
-
             </div>
           </section>
           <br>
           <br>
           <br>
         </div>
-        <!---end time--->
       </div>
     </div>
     <!-- /.content-wrapper -->

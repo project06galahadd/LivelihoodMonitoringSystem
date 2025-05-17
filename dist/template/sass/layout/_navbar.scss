@@ -1,0 +1,115 @@
+.navbar-header {
+  height: rem(72px);
+  background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
+  position: sticky;
+  top: 0;
+  padding: rem(16px) rem(24px);
+  z-index: 2;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.sidebar-toggle,
+.sidebar-mobile-toggle {
+  line-height: 1.2;
+  color: rgba(255,255,255,0.8);
+  .icon {
+    font-size: rem(22px);
+  }
+  &:hover {
+    color: #ffffff;
+    opacity: 0.9;
+  }
+}
+
+.sidebar-toggle {
+  display: none;
+  @include media(xl) {
+    display: inline-block;
+  }
+  &.active {
+    .icon {
+      &.non-active {
+        display: none;
+      }
+      &.active {
+        display: inline-block;
+      }
+    }
+  }
+  .icon {
+    &.active {
+      display: none;
+    }
+  }
+}
+
+.sidebar-mobile-toggle {
+  display: inline-block;
+  @include media(xl) {
+    display: none;
+  }
+}
+
+.navbar-search {
+  position: relative;
+  display: none;
+  @include media(lg) {
+    display: inline-block;
+  }
+  input {
+    width: rem(388px);
+    height: rem(40px);
+    background-color: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    @include border-radius(rem(8px));
+    padding-block: rem(5px);
+    padding-inline-start: rem(42px);
+    padding-inline-end: rem(20px);
+    color: rgba(255,255,255,0.8);
+    &:focus {
+      border-color: rgba(255,255,255,0.3);
+      background-color: rgba(255,255,255,0.15);
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.1);
+    }
+    &::placeholder {
+      color: rgba(255,255,255,0.5);
+    }
+  }
+  .icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    inset-inline-start: rem(15px);
+    font-size: rem(18px);
+    color: rgba(255,255,255,0.8);
+  }
+}
+
+[data-theme-toggle] {
+  font-size: 0;
+  position: relative;
+  &::after {
+    position: absolute;
+    content: "\f1bf";
+    font-family: remixicon;
+    font-style: normal;
+    font-size: rem(20px);
+    color: rgba(255,255,255,0.8);
+    transition: color 0.3s ease;
+  }
+  &[aria-label="dark"] {
+    &::after {
+      content: "\ef6f";
+      color: #ffffff;
+    }
+  }
+  &:hover::after {
+    color: #ffffff;
+    opacity: 0.9;
+  }
+}
+
+.positioned-icon {
+  inset-inline-start: 16px;
+}

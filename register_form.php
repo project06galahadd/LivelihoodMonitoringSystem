@@ -110,7 +110,7 @@ include "register_script"; ?>
                       <div class="col-lg-4">
                         <div class="form-group">
                           <label>Age</label>
-                          <input type="text" class="form-control" name="AGE" readonly required>
+                          <input type="text" class="form-control" name="AGE" required>
                         </div>
                       </div>
                       <div class="col-lg-4">
@@ -255,141 +255,141 @@ include "register_script"; ?>
               </form>
 
               <script>
-              // Step navigation logic
-              const credentialsStep = document.getElementById('step-credentials');
-              const personalStep = document.getElementById('step-personal');
-              const nextBtn = document.getElementById('nextToPersonal');
+                // Step navigation logic
+                const credentialsStep = document.getElementById('step-credentials');
+                const personalStep = document.getElementById('step-personal');
+                const nextBtn = document.getElementById('nextToPersonal');
 
-              nextBtn.addEventListener('click', function() {
-                // Validate credentials fields
-                const form = document.getElementById('registrationForm');
-                const username = form.USERNAME;
-                const email = form.EMAIL;
-                const password = form.PASSWORD;
-                const confirmPassword = form.CONFIRM_PASSWORD;
-                let valid = true;
+                nextBtn.addEventListener('click', function() {
+                  // Validate credentials fields
+                  const form = document.getElementById('registrationForm');
+                  const username = form.USERNAME;
+                  const email = form.EMAIL;
+                  const password = form.PASSWORD;
+                  const confirmPassword = form.CONFIRM_PASSWORD;
+                  let valid = true;
 
-                // Username validation
-                if (username.value.length < 6) {
-                  username.setCustomValidity('Username must be at least 6 characters long');
-                  valid = false;
-                } else {
-                  username.setCustomValidity('');
-                }
-
-                // Email validation
-                if (!email.value.match(/^\S+@\S+\.\S+$/)) {
-                  email.setCustomValidity('Enter a valid email address');
-                  valid = false;
-                } else {
-                  email.setCustomValidity('');
-                }
-
-                // Password validation
-                if (password.value.length < 8) {
-                  password.setCustomValidity('Password must be at least 8 characters long');
-                  valid = false;
-                } else if (!/[0-9]/.test(password.value) || !/[a-zA-Z]/.test(password.value)) {
-                  password.setCustomValidity('Password must contain both letters and numbers');
-                  valid = false;
-                } else {
-                  password.setCustomValidity('');
-                }
-
-                // Confirm password
-                if (confirmPassword.value !== password.value) {
-                  confirmPassword.setCustomValidity('Passwords do not match');
-                  valid = false;
-                } else {
-                  confirmPassword.setCustomValidity('');
-                }
-
-                if (valid) {
-                  credentialsStep.style.display = 'none';
-                  personalStep.style.display = 'block';
-                  window.scrollTo(0, 0);
-                } else {
-                  form.classList.add('was-validated');
-                }
-              });
-
-              // Update file input labels
-              document.querySelectorAll('.custom-file-input').forEach(input => {
-                input.addEventListener('change', function(e) {
-                  const fileName = e.target.files[0]?.name || 'Choose file';
-                  const label = e.target.nextElementSibling;
-                  label.textContent = fileName;
-                  
-                  // Add Bootstrap class for showing the file name
-                  if (fileName !== 'Choose file') {
-                    label.classList.add('selected');
+                  // Username validation
+                  if (username.value.length < 6) {
+                    username.setCustomValidity('Username must be at least 6 characters long');
+                    valid = false;
                   } else {
-                    label.classList.remove('selected');
+                    username.setCustomValidity('');
+                  }
+
+                  // Email validation
+                  if (!email.value.match(/^\S+@\S+\.\S+$/)) {
+                    email.setCustomValidity('Enter a valid email address');
+                    valid = false;
+                  } else {
+                    email.setCustomValidity('');
+                  }
+
+                  // Password validation
+                  if (password.value.length < 8) {
+                    password.setCustomValidity('Password must be at least 8 characters long');
+                    valid = false;
+                  } else if (!/[0-9]/.test(password.value) || !/[a-zA-Z]/.test(password.value)) {
+                    password.setCustomValidity('Password must contain both letters and numbers');
+                    valid = false;
+                  } else {
+                    password.setCustomValidity('');
+                  }
+
+                  // Confirm password
+                  if (confirmPassword.value !== password.value) {
+                    confirmPassword.setCustomValidity('Passwords do not match');
+                    valid = false;
+                  } else {
+                    confirmPassword.setCustomValidity('');
+                  }
+
+                  if (valid) {
+                    credentialsStep.style.display = 'none';
+                    personalStep.style.display = 'block';
+                    window.scrollTo(0, 0);
+                  } else {
+                    form.classList.add('was-validated');
                   }
                 });
-              });
 
-              // Form submission handling
-              document.getElementById('registrationForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Validate form
-                if (!this.checkValidity()) {
-                  e.stopPropagation();
-                  this.classList.add('was-validated');
-                  return;
-                }
+                // Update file input labels
+                document.querySelectorAll('.custom-file-input').forEach(input => {
+                  input.addEventListener('change', function(e) {
+                    const fileName = e.target.files[0]?.name || 'Choose file';
+                    const label = e.target.nextElementSibling;
+                    label.textContent = fileName;
 
-                const formData = new FormData(this);
-                const submitBtn = document.getElementById('submitBtn');
-                const responseMessage = document.getElementById('response-message');
-                
-                // Validate file sizes
-                const idFile = this.querySelector('input[name="UPLOAD_ID"]').files[0];
-                const selfieFile = this.querySelector('input[name="UPLOAD_WITH_SELFIE"]').files[0];
-                
-                if (idFile && idFile.size > 2 * 1024 * 1024) {
-                  responseMessage.innerHTML = '<div class="alert alert-danger">ID file size exceeds 2MB limit</div>';
-                  return;
-                }
-                
-                if (selfieFile && selfieFile.size > 2 * 1024 * 1024) {
-                  responseMessage.innerHTML = '<div class="alert alert-danger">Selfie file size exceeds 2MB limit</div>';
-                  return;
-                }
-                
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
-                
-                fetch('register_process.php', {
-                  method: 'POST',
-                  body: formData
-                })
-                .then(response => {
-                  if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                  }
-                  return response.json();
-                })
-                .then(data => {
-                  if (data.status === 'success') {
-                    responseMessage.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
-                    if (data.redirect) {
-                      window.location.href = data.redirect;
+                    // Add Bootstrap class for showing the file name
+                    if (fileName !== 'Choose file') {
+                      label.classList.add('selected');
+                    } else {
+                      label.classList.remove('selected');
                     }
-                  } else {
-                    responseMessage.innerHTML = '<div class="alert alert-danger">' + data.message + '</div>';
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'Submit Application';
-                  }
-                })
-                .catch(error => {
-                  console.error('Error:', error);
-                  responseMessage.innerHTML = '<div class="alert alert-danger">An error occurred while submitting the form. Please try again.</div>';
-                  submitBtn.disabled = false;
-                  submitBtn.innerHTML = 'Submit Application';
+                  });
                 });
-              });
+
+                // Form submission handling
+                document.getElementById('registrationForm').addEventListener('submit', function(e) {
+                  e.preventDefault();
+
+                  // Validate form
+                  if (!this.checkValidity()) {
+                    e.stopPropagation();
+                    this.classList.add('was-validated');
+                    return;
+                  }
+
+                  const formData = new FormData(this);
+                  const submitBtn = document.getElementById('submitBtn');
+                  const responseMessage = document.getElementById('response-message');
+
+                  // Validate file sizes
+                  const idFile = this.querySelector('input[name="UPLOAD_ID"]').files[0];
+                  const selfieFile = this.querySelector('input[name="UPLOAD_WITH_SELFIE"]').files[0];
+
+                  if (idFile && idFile.size > 2 * 1024 * 1024) {
+                    responseMessage.innerHTML = '<div class="alert alert-danger">ID file size exceeds 2MB limit</div>';
+                    return;
+                  }
+
+                  if (selfieFile && selfieFile.size > 2 * 1024 * 1024) {
+                    responseMessage.innerHTML = '<div class="alert alert-danger">Selfie file size exceeds 2MB limit</div>';
+                    return;
+                  }
+
+                  submitBtn.disabled = true;
+                  submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+
+                  fetch('register_process.php', {
+                      method: 'POST',
+                      body: formData
+                    })
+                    .then(response => {
+                      if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                      }
+                      return response.json();
+                    })
+                    .then(data => {
+                      if (data.status === 'success') {
+                        responseMessage.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+                        if (data.redirect) {
+                          window.location.href = data.redirect;
+                        }
+                      } else {
+                        responseMessage.innerHTML = '<div class="alert alert-danger">' + data.message + '</div>';
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Application';
+                      }
+                    })
+                    .catch(error => {
+                      console.error('Error:', error);
+                      responseMessage.innerHTML = '<div class="alert alert-danger">An error occurred while submitting the form. Please try again.</div>';
+                      submitBtn.disabled = false;
+                      submitBtn.innerHTML = 'Submit Application';
+                    });
+                });
               </script>
 
               <style>
@@ -398,64 +398,83 @@ include "register_script"; ?>
                   body * {
                     visibility: hidden;
                   }
-                  .print-content, .print-content * {
+
+                  .print-content,
+                  .print-content * {
                     visibility: visible;
                   }
+
                   .print-content {
                     position: absolute;
                     left: 0;
                     top: 0;
                     width: 100%;
                   }
+
                   .print-header {
                     display: block !important;
                     margin-bottom: 2rem;
                   }
+
                   .print-logo {
                     max-width: 150px;
                     height: auto;
                   }
+
                   .print-hr {
                     border-top: 2px solid #000;
                     margin: 1rem 0;
                   }
+
                   .form-group {
                     margin-bottom: 1rem;
                   }
+
                   .form-control {
                     border: 1px solid #000;
                     background: transparent;
                     padding: 0.5rem;
                   }
+
                   .form-control:focus {
                     box-shadow: none;
                   }
+
                   .card {
                     border: none;
                     box-shadow: none;
                   }
-                  .card-header, .card-tools {
+
+                  .card-header,
+                  .card-tools {
                     display: none;
                   }
+
                   .btn {
                     display: none;
                   }
+
                   .custom-file {
                     display: none;
                   }
+
                   .text-muted {
                     color: #000 !important;
                   }
+
                   .text-primary {
                     color: #000 !important;
                     font-weight: bold;
                   }
+
                   .mt-4 {
                     margin-top: 2rem !important;
                   }
+
                   .mb-3 {
                     margin-bottom: 1rem !important;
                   }
+
                   .col-lg-12 {
                     page-break-inside: avoid;
                   }
@@ -466,7 +485,7 @@ include "register_script"; ?>
                   color: #495057;
                   background-color: #fff;
                   border-color: #80bdff;
-                  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+                  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
                 }
               </style>
 
@@ -474,7 +493,7 @@ include "register_script"; ?>
                 function printForm() {
                   const printContent = document.querySelector('.card-body').cloneNode(true);
                   printContent.classList.add('print-content');
-                  
+
                   const printHeader = document.createElement('div');
                   printHeader.className = 'print-header';
                   printHeader.innerHTML = `
@@ -488,7 +507,7 @@ include "register_script"; ?>
                     </div>
                   `;
                   printContent.insertBefore(printHeader, printContent.firstChild);
-                  
+
                   // Add signature section
                   const signatureSection = document.createElement('div');
                   signatureSection.className = 'text-center';
@@ -499,7 +518,7 @@ include "register_script"; ?>
                     <div style="font-size: 10px;">MSWD Officer's Signature</div>
                   `;
                   printContent.appendChild(signatureSection);
-                  
+
                   // Create preview window
                   const previewWindow = window.open('', '_blank', 'width=800,height=600');
                   previewWindow.document.write(`

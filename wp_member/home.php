@@ -25,14 +25,14 @@ $fullname = $_SESSION['fullname'];
 
 // Get user profile data and status
 try {
-    $stmt = $conn->prepare("SELECT u.*, m.STATUS_REMARKS as status FROM tbl_users u 
-                           LEFT JOIN tbl_members m ON u.user_id = m.user_id 
+    $stmt = $conn->prepare("SELECT u.*, m.STATUS_REMARKS as status FROM tbl_users u
+                           LEFT JOIN tbl_members m ON u.user_id = m.user_id
                            WHERE u.user_id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $user_data = $result->fetch_assoc();
-    
+
     // Set status in session if not already set
     if (!isset($_SESSION['status'])) {
         $_SESSION['status'] = $user_data['status'] ?? 'PENDING';
@@ -43,13 +43,15 @@ try {
 }
 
 // Function to check if table exists
-function tableExists($conn, $tableName) {
+function tableExists($conn, $tableName)
+{
     $result = $conn->query("SHOW TABLES LIKE '$tableName'");
     return $result->num_rows > 0;
 }
 
 // Function to count records with table existence check
-function getCount($conn, $table, $condition = '1') {
+function getCount($conn, $table, $condition = '1')
+{
     if (!tableExists($conn, $table)) {
         return 0;
     }
@@ -72,10 +74,10 @@ try {
     // Get recent activities
     if (tableExists($conn, 'tbl_activity_log')) {
         $recent_activities = $conn->query("
-            SELECT activity, status, created_at 
-            FROM tbl_activity_log 
-            WHERE user_id = $user_id 
-            ORDER BY created_at DESC 
+            SELECT activity, status, created_at
+            FROM tbl_activity_log
+            WHERE user_id = $user_id
+            ORDER BY created_at DESC
             LIMIT 5
         ");
         if (!$recent_activities) {
@@ -95,6 +97,7 @@ try {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -127,12 +130,12 @@ try {
         /* Sidebar Styles */
         .main-sidebar {
             background: var(--primary-color);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
 
         .brand-link {
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             color: #fff !important;
             background: var(--primary-color);
             padding: 1rem;
@@ -145,15 +148,15 @@ try {
         }
 
         .user-panel {
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding: 1.5rem 1rem;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .user-panel .image img {
             width: 60px;
             height: 60px;
-            border: 3px solid rgba(255,255,255,0.2);
+            border: 3px solid rgba(255, 255, 255, 0.2);
         }
 
         .user-panel .info a {
@@ -163,7 +166,7 @@ try {
         }
 
         .user-panel .info small {
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .nav-sidebar .nav-item {
@@ -171,7 +174,7 @@ try {
         }
 
         .nav-sidebar .nav-link {
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             border-radius: 8px;
             padding: 12px 15px;
             transition: all 0.3s ease;
@@ -180,14 +183,14 @@ try {
         }
 
         .nav-sidebar .nav-link:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: #fff;
         }
 
         .nav-sidebar .nav-link.active {
             background: var(--secondary-color);
             color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .nav-sidebar .nav-link i {
@@ -200,7 +203,7 @@ try {
         .main-header {
             background: #fff;
             border-bottom: 1px solid #eee;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .main-header .nav-link {
@@ -209,7 +212,7 @@ try {
 
         .dropdown-menu {
             border: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
         }
 
@@ -256,7 +259,7 @@ try {
         .card {
             border: none;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             margin-bottom: 1.5rem;
             background: #fff;
         }
@@ -276,7 +279,7 @@ try {
 
         .info-box {
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease;
             background: #fff;
             min-height: 120px;
@@ -327,17 +330,18 @@ try {
             .main-sidebar {
                 transform: translateX(-100%);
             }
-            
+
             .sidebar-open .main-sidebar {
                 transform: translateX(0);
             }
-            
+
             .content-wrapper {
                 margin-left: 0;
             }
         }
     </style>
 </head>
+
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
         <!-- Navbar -->
@@ -349,7 +353,6 @@ try {
                     </a>
                 </li>
             </ul>
-
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
@@ -367,22 +370,19 @@ try {
                 </li>
             </ul>
         </nav>
-
         <!-- Sidebar -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a href="home.php" class="brand-link text-center">
                 <img src="/LivelihoodMonitoringSystem/dist/img/Logo.png" alt="MSWD Logo" class="brand-image img-circle elevation-3">
                 <span class="brand-text font-weight-light">MSWD Member</span>
             </a>
-
-            <!-- Profile Section -->
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="image">
-                    <img src="<?php echo !empty($user_data['profile_picture']) ? '../uploads/profile/' . $user_data['profile_picture'] : '/LivelihoodMonitoringSystem/dist/img/default-avatar.png'; ?>" 
-                         class="img-circle elevation-2" alt="User Image">
+                    <img src="<?php echo !empty($user_data['profile_picture']) ? '../uploads/profile/' . $user_data['profile_picture'] : '/LivelihoodMonitoringSystem/dist/img/default-avatar.png'; ?>"
+                        class="img-circle elevation-2" alt="User Image" style="width:70px;height:70px;object-fit:cover;">
                 </div>
                 <div class="info">
-                    <a href="profile.php" class="d-block">
+                    <a href="profile.php" class="d-block" style="font-size:1.2rem;font-weight:600;">
                         <?php echo htmlspecialchars($fullname); ?>
                     </a>
                     <small>
@@ -390,7 +390,6 @@ try {
                     </small>
                 </div>
             </div>
-
             <div class="sidebar">
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -434,98 +433,123 @@ try {
                 </nav>
             </div>
         </aside>
-
         <!-- Content Wrapper -->
         <div class="content-wrapper">
-            <!-- Content Header -->
             <div class="content-header">
                 <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1 class="m-0">Beneficiary Dashboard</h1>
+                    <div class="row mb-2 align-items-center">
+                        <div class="col-md-8 col-12 mb-2 mb-md-0">
+                            <h1 class="m-0" style="font-weight:700;font-size:2.2rem;">Welcome, <?php echo htmlspecialchars($fullname); ?>!</h1>
+                            <p class="text-muted" style="font-size:1.1rem;">Here is your personalized dashboard. Quick access to your records and activities.</p>
                         </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="home.php">Home</a></li>
-                                <li class="breadcrumb-item active">Dashboard</li>
-                            </ol>
+                        <div class="col-md-4 col-12 text-md-right text-center">
+                            <a href="livelihood.php" class="btn btn-gradient-primary m-1"><i class="fas fa-plus mr-1"></i> Add Livelihood</a>
+                            <a href="household_case.php" class="btn btn-gradient-success m-1"><i class="fas fa-plus mr-1"></i> Add Household Case</a>
+                            <a href="profile.php" class="btn btn-gradient-info m-1"><i class="fas fa-user mr-1"></i> View Profile</a>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
                     <?php if (isset($_SESSION['status']) && $_SESSION['status'] == 'PENDING'): ?>
-                    <div class="alert alert-warning alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <h5><i class="icon fas fa-warning"></i> Account Pending Approval</h5>
-                        Your account is currently pending approval. You will have full access once an administrator approves your account.
-                    </div>
+                        <div class="alert alert-warning alert-dismissible fade show">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <h5><i class="icon fas fa-warning"></i> Account Pending Approval</h5>
+                            Your account is currently pending approval. You will have full access once an administrator approves your account.
+                        </div>
                     <?php endif; ?>
-
-                    <div class="row">
-                        <!-- Livelihood Records Card -->
-                        <div class="col-lg-3 col-6">
-                            <div class="info-box <?php echo (isset($_SESSION['status']) && $_SESSION['status'] == 'PENDING') ? 'disabled' : ''; ?>">
-                                <span class="info-box-icon"><i class="fas fa-chart-line"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Livelihood Records</span>
-                                    <span class="info-box-number"><?php echo $livelihood_count; ?></span>
+                    <!-- Info Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3 col-6 mb-3">
+                            <a href="livelihood.php" class="card card-elegant h-100 text-decoration-none">
+                                <div class="card-body d-flex align-items-center">
+                                    <div class="icon-circle bg-gradient-primary text-white mr-3"><i class="fas fa-chart-line fa-2x"></i></div>
+                                    <div>
+                                        <div class="card-title mb-0" style="font-size:1.1rem;font-weight:600;">Livelihood Records</div>
+                                        <div class="display-4" style="font-weight:700;"><?php echo $livelihood_count; ?></div>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
-
-                        <!-- Household Cases Card -->
-                        <div class="col-lg-3 col-6">
-                            <div class="info-box <?php echo (isset($_SESSION['status']) && $_SESSION['status'] == 'PENDING') ? 'disabled' : ''; ?>">
-                                <span class="info-box-icon"><i class="fas fa-users"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Household Cases</span>
-                                    <span class="info-box-number"><?php echo $household_count; ?></span>
+                        <div class="col-md-3 col-6 mb-3">
+                            <a href="household_case.php" class="card card-elegant h-100 text-decoration-none">
+                                <div class="card-body d-flex align-items-center">
+                                    <div class="icon-circle bg-gradient-success text-white mr-3"><i class="fas fa-users fa-2x"></i></div>
+                                    <div>
+                                        <div class="card-title mb-0" style="font-size:1.1rem;font-weight:600;">Household Cases</div>
+                                        <div class="display-4" style="font-weight:700;"><?php echo $household_count; ?></div>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
-
-                        <!-- News & Announcements Card -->
-                        <div class="col-lg-3 col-6">
-                            <div class="info-box <?php echo (isset($_SESSION['status']) && $_SESSION['status'] == 'PENDING') ? 'disabled' : ''; ?>">
-                                <span class="info-box-icon"><i class="fas fa-newspaper"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">News & Updates</span>
-                                    <span class="info-box-number"><?php echo $activity_count; ?></span>
+                        <div class="col-md-3 col-6 mb-3">
+                            <a href="news.php" class="card card-elegant h-100 text-decoration-none">
+                                <div class="card-body d-flex align-items-center">
+                                    <div class="icon-circle bg-gradient-warning text-white mr-3"><i class="fas fa-newspaper fa-2x"></i></div>
+                                    <div>
+                                        <div class="card-title mb-0" style="font-size:1.1rem;font-weight:600;">News & Updates</div>
+                                        <div class="display-4" style="font-weight:700;"><?php echo $activity_count; ?></div>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
-
-                        <!-- Profile Views Card -->
-                        <div class="col-lg-3 col-6">
-                            <div class="info-box <?php echo (isset($_SESSION['status']) && $_SESSION['status'] == 'PENDING') ? 'disabled' : ''; ?>">
-                                <span class="info-box-icon"><i class="fas fa-eye"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Profile Views</span>
-                                    <span class="info-box-number">0</span>
+                        <div class="col-md-3 col-6 mb-3">
+                            <a href="profile.php" class="card card-elegant h-100 text-decoration-none">
+                                <div class="card-body d-flex align-items-center">
+                                    <div class="icon-circle bg-gradient-info text-white mr-3"><i class="fas fa-eye fa-2x"></i></div>
+                                    <div>
+                                        <div class="card-title mb-0" style="font-size:1.1rem;font-weight:600;">Profile Views</div>
+                                        <div class="display-4" style="font-weight:700;">0</div>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
-
-                    <!-- Recent Activity Section -->
+                    <!-- Recent Activity Timeline -->
                     <div class="row">
-                        <div class="col-md-12">
-                            <div class="card <?php echo (isset($_SESSION['status']) && $_SESSION['status'] == 'PENDING') ? 'disabled' : ''; ?>">
-                                <div class="card-header">
-                                    <h3 class="card-title">
-                                        <i class="fas fa-history mr-2"></i>
-                                        Recent Activity
-                                    </h3>
+                        <div class="col-lg-8 col-12 mb-4 mb-lg-0">
+                            <div class="card card-elegant">
+                                <div class="card-header bg-white border-0 pb-0">
+                                    <h3 class="card-title" style="font-weight:600;"><i class="fas fa-history mr-2"></i>Recent Activity</h3>
                                 </div>
-                                <div class="card-body">
-                                    <div class="text-center text-muted">
-                                        <i class="fas fa-clock fa-3x mb-3"></i>
-                                        <p>No recent activity to display</p>
-                                    </div>
+                                <div class="card-body pt-3">
+                                    <?php if ($recent_activities && $recent_activities->num_rows > 0): ?>
+                                        <ul class="timeline timeline-elegant">
+                                            <?php while ($activity = $recent_activities->fetch_assoc()): ?>
+                                                <li class="timeline-item mb-4">
+                                                    <span class="timeline-icon bg-gradient-primary"><i class="fas fa-check"></i></span>
+                                                    <div class="timeline-content">
+                                                        <span class="badge badge-<?php echo strtolower($activity['status']) === 'success' ? 'success' : (strtolower($activity['status']) === 'pending' ? 'warning' : 'danger'); ?> mr-2">
+                                                            <?php echo htmlspecialchars($activity['status']); ?>
+                                                        </span>
+                                                        <span class="font-weight-bold"><?php echo htmlspecialchars($activity['activity']); ?></span>
+                                                        <div class="small text-muted mt-1"><i class="far fa-clock mr-1"></i><?php echo date('M d, Y h:i A', strtotime($activity['created_at'])); ?></div>
+                                                    </div>
+                                                </li>
+                                            <?php endwhile; ?>
+                                        </ul>
+                                    <?php else: ?>
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-clock fa-3x mb-3"></i>
+                                            <p>No recent activity to display</p>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-12">
+                            <div class="card card-elegant h-100">
+                                <div class="card-header bg-white border-0 pb-0">
+                                    <h3 class="card-title" style="font-weight:600;"><i class="fas fa-info-circle mr-2"></i>Quick Tips</h3>
+                                </div>
+                                <div class="card-body pt-3">
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-3"><i class="fas fa-lightbulb text-warning mr-2"></i>Keep your profile updated for better service.</li>
+                                        <li class="mb-3"><i class="fas fa-bell text-info mr-2"></i>Check News & Announcements regularly.</li>
+                                        <li class="mb-3"><i class="fas fa-users text-success mr-2"></i>Submit household cases for assistance.</li>
+                                        <li><i class="fas fa-comments text-primary mr-2"></i>Use chat to contact admin for help.</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -534,44 +558,31 @@ try {
             </section>
         </div>
     </div>
-
+    <style>
+        .btn-gradient-primary {background: linear-gradient(90deg,#3498db 0%,#6dd5fa 100%);color:#fff;border:none;}
+        .btn-gradient-success {background: linear-gradient(90deg,#28a745 0%,#6dd5fa 100%);color:#fff;border:none;}
+        .btn-gradient-info {background: linear-gradient(90deg,#17a2b8 0%,#6dd5fa 100%);color:#fff;border:none;}
+        .card-elegant {border-radius:18px;box-shadow:0 4px 24px rgba(44,62,80,0.08);transition:box-shadow .3s,transform .3s;}
+        .card-elegant:hover {box-shadow:0 8px 32px rgba(44,62,80,0.16);transform:translateY(-4px) scale(1.01);}
+        .icon-circle {width:56px;height:56px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:2rem;box-shadow:0 2px 8px rgba(44,62,80,0.08);margin-right:1rem;}
+        .bg-gradient-primary {background:linear-gradient(135deg,#3498db 0%,#2c3e50 100%)!important;}
+        .bg-gradient-success {background:linear-gradient(135deg,#28a745 0%,#2ecc71 100%)!important;}
+        .bg-gradient-warning {background:linear-gradient(135deg,#f1c40f 0%,#e67e22 100%)!important;}
+        .bg-gradient-info {background:linear-gradient(135deg,#17a2b8 0%,#2980b9 100%)!important;}
+        .timeline-elegant {list-style:none;padding-left:0;position:relative;}
+        .timeline-elegant:before {content:'';position:absolute;left:28px;top:0;bottom:0;width:4px;background:#e9ecef;border-radius:2px;}
+        .timeline-item {position:relative;min-height:60px;}
+        .timeline-icon {position:absolute;left:10px;top:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:#fff;font-size:1.2rem;box-shadow:0 2px 8px rgba(44,62,80,0.08);z-index:1;}
+        .timeline-content {margin-left:60px;}
+        @media (max-width: 767.98px) {
+            .timeline-elegant:before {left:18px;}
+            .timeline-icon {left:0;}
+            .timeline-content {margin-left:48px;}
+        }
+    </style>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-    <script>
-        $(function () {
-            // Initialize sidebar toggle
-            $('[data-widget="pushmenu"]').PushMenu('collapse');
-            
-            // Initialize dropdowns
-            $('.dropdown-toggle').dropdown();
-            
-            // Initialize treeview with accordion disabled
-            $('[data-widget="treeview"]').Treeview('init', {
-                accordion: false
-            });
-
-            // Handle sidebar menu clicks
-            $('.nav-sidebar .nav-link').on('click', function(e) {
-                $('.nav-sidebar .nav-link').removeClass('active');
-                $(this).addClass('active');
-            });
-
-            // Initialize sidebar collapse
-            $('.sidebar-toggle').on('click', function() {
-                $('body').toggleClass('sidebar-collapse');
-            });
-
-            // Add hover effect to info boxes
-            $('.info-box').hover(
-                function() {
-                    $(this).css('transform', 'translateY(-5px)');
-                },
-                function() {
-                    $(this).css('transform', 'translateY(0)');
-                }
-            );
-        });
-    </script>
 </body>
+
 </html>

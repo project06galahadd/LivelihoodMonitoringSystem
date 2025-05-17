@@ -9,22 +9,21 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'MEMBER') {
 }
 
 $user_id = $_SESSION['user_id'];
-$username = $_SESSION['username'];
 $fullname = $_SESSION['fullname'];
-
-// Get all admins
-$admin_query = "SELECT ID, FIRSTNAME, LASTNAME FROM tbl_users WHERE ROLE = 'ADMIN' AND ACC_STATUS = 1";
-$admin_result = $conn->query($admin_query);
-
-// Debug information
-error_log("User ID: " . $user_id);
-error_log("Username: " . $username);
-error_log("Fullname: " . $fullname);
-error_log("Number of admins found: " . $admin_result->num_rows);
+// Get user profile data
+$user_data = null;
+try {
+    $stmt = $conn->prepare("SELECT * FROM tbl_users WHERE user_id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user_data = $result->fetch_assoc();
+} catch (Exception $e) { $user_data = null; }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,6 +33,7 @@ error_log("Number of admins found: " . $admin_result->num_rows);
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="/LivelihoodMonitoringSystem/dist/css/chat.css">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -57,12 +57,12 @@ error_log("Number of admins found: " . $admin_result->num_rows);
         /* Sidebar Styles */
         .main-sidebar {
             background: var(--primary-color);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
 
         .brand-link {
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             color: #fff !important;
             background: var(--primary-color);
             padding: 1rem;
@@ -75,15 +75,15 @@ error_log("Number of admins found: " . $admin_result->num_rows);
         }
 
         .user-panel {
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding: 1.5rem 1rem;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .user-panel .image img {
             width: 60px;
             height: 60px;
-            border: 3px solid rgba(255,255,255,0.2);
+            border: 3px solid rgba(255, 255, 255, 0.2);
         }
 
         .user-panel .info a {
@@ -93,7 +93,7 @@ error_log("Number of admins found: " . $admin_result->num_rows);
         }
 
         .user-panel .info small {
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .nav-sidebar .nav-item {
@@ -101,7 +101,7 @@ error_log("Number of admins found: " . $admin_result->num_rows);
         }
 
         .nav-sidebar .nav-link {
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             border-radius: 8px;
             padding: 12px 15px;
             transition: all 0.3s ease;
@@ -110,14 +110,14 @@ error_log("Number of admins found: " . $admin_result->num_rows);
         }
 
         .nav-sidebar .nav-link:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: #fff;
         }
 
         .nav-sidebar .nav-link.active {
             background: var(--secondary-color);
             color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .nav-sidebar .nav-link i {
@@ -130,7 +130,7 @@ error_log("Number of admins found: " . $admin_result->num_rows);
         .main-header {
             background: #fff;
             border-bottom: 1px solid #eee;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .main-header .nav-link {
@@ -139,7 +139,7 @@ error_log("Number of admins found: " . $admin_result->num_rows);
 
         .dropdown-menu {
             border: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
         }
 
@@ -186,7 +186,7 @@ error_log("Number of admins found: " . $admin_result->num_rows);
         .chat-container {
             background: #fff;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             height: calc(100vh - 250px);
             display: flex;
             flex-direction: column;
@@ -235,17 +235,17 @@ error_log("Number of admins found: " . $admin_result->num_rows);
         .message.received .message-content {
             background: #fff;
             color: var(--text-color);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .message-time {
             font-size: 0.75rem;
-            color: rgba(0,0,0,0.5);
+            color: rgba(0, 0, 0, 0.5);
             margin-top: 0.25rem;
         }
 
         .message.sent .message-time {
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .chat-input {
@@ -321,11 +321,11 @@ error_log("Number of admins found: " . $admin_result->num_rows);
             .main-sidebar {
                 transform: translateX(-100%);
             }
-            
+
             .sidebar-open .main-sidebar {
                 transform: translateX(0);
             }
-            
+
             .content-wrapper {
                 margin-left: 0;
             }
@@ -340,102 +340,14 @@ error_log("Number of admins found: " . $admin_result->num_rows);
         }
     </style>
 </head>
-<body class="hold-transition sidebar-mini">
+
+<body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
         <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button">
-                        <i class="fas fa-bars"></i>
-                    </a>
-                </li>
-            </ul>
-
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
-                        <i class="fas fa-user-circle mr-2"></i><?php echo htmlspecialchars($fullname); ?>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="profile.php">
-                            <i class="fas fa-user mr-2"></i>Profile
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="logout.php">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                        </a>
-                    </div>
-                </li>
-            </ul>
-        </nav>
+        <?php include 'includes/navbar.php'; ?>
 
         <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="home.php" class="brand-link text-center">
-                <img src="/LivelihoodMonitoringSystem/dist/img/Logo.png" alt="MSWD Logo" class="brand-image img-circle elevation-3">
-                <span class="brand-text font-weight-light">MSWD Member</span>
-            </a>
-
-            <!-- Profile Section -->
-            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                <div class="image">
-                    <img src="<?php echo !empty($user_data['profile_picture']) ? '../uploads/profile/' . $user_data['profile_picture'] : '/LivelihoodMonitoringSystem/dist/img/default-avatar.png'; ?>" 
-                         class="img-circle elevation-2" alt="User Image">
-                </div>
-                <div class="info">
-                    <a href="profile.php" class="d-block">
-                        <?php echo htmlspecialchars($fullname); ?>
-                    </a>
-                    <small>
-                        <i class="fas fa-circle text-success"></i> Online
-                    </small>
-                </div>
-            </div>
-
-            <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item">
-                            <a href="home.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'home.php' ? 'active' : ''; ?>">
-                                <i class="nav-icon fas fa-home"></i>
-                                <p>Dashboard</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="livelihood.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'livelihood.php' ? 'active' : ''; ?>">
-                                <i class="nav-icon fas fa-chart-line"></i>
-                                <p>Livelihood Records</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="household_case.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'household_case.php' ? 'active' : ''; ?>">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Household Case Records</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="news.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'news.php' ? 'active' : ''; ?>">
-                                <i class="nav-icon fas fa-newspaper"></i>
-                                <p>News & Announcements</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="chat.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'chat.php' ? 'active' : ''; ?>">
-                                <i class="nav-icon fas fa-comments"></i>
-                                <p>Chat with Admin</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="profile.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
-                                <i class="nav-icon fas fa-user-cog"></i>
-                                <p>Profile Settings</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
+        <?php include 'includes/sidebar.php'; ?>
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">
@@ -482,106 +394,13 @@ error_log("Number of admins found: " . $admin_result->num_rows);
                 </div>
             </section>
         </div>
+        <?php include "includes/footer.php"; ?>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-    <script>
-        $(function () {
-            // Initialize sidebar toggle
-            $('[data-widget="pushmenu"]').PushMenu('collapse');
-            
-            // Initialize dropdowns
-            $('.dropdown-toggle').dropdown();
-            
-            // Initialize treeview with accordion disabled
-            $('[data-widget="treeview"]').Treeview('init', {
-                accordion: false
-            });
-
-            // Handle sidebar menu clicks
-            $('.nav-sidebar .nav-link').on('click', function(e) {
-                $('.nav-sidebar .nav-link').removeClass('active');
-                $(this).addClass('active');
-            });
-
-            // Chat functionality
-            const chatMessages = $('#chat-messages');
-            const messageForm = $('#message-form');
-            const messageInput = $('#message');
-            const sendButton = $('#send-button');
-            let lastMessageId = 0;
-
-            function formatMessageTime(timestamp) {
-                const date = new Date(timestamp);
-                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }
-
-            function addMessage(message, isSent = true) {
-                const messageHtml = `
-                    <div class="message ${isSent ? 'sent' : 'received'}">
-                        <div class="message-content">
-                            ${message.message}
-                            <div class="message-time">${formatMessageTime(message.timestamp)}</div>
-                        </div>
-                    </div>
-                `;
-                chatMessages.append(messageHtml);
-                chatMessages.scrollTop(chatMessages[0].scrollHeight);
-            }
-
-            function loadMessages() {
-                $.get('get_messages.php', { last_id: lastMessageId }, function(response) {
-                    if (response.messages && response.messages.length > 0) {
-                        response.messages.forEach(message => {
-                            if (message.id > lastMessageId) {
-                                addMessage(message, message.sender_id === <?php echo $user_id; ?>);
-                                lastMessageId = message.id;
-                            }
-                        });
-                    }
-                });
-            }
-
-            // Load messages every 3 seconds
-            setInterval(loadMessages, 3000);
-            loadMessages();
-
-            messageForm.on('submit', function(e) {
-                e.preventDefault();
-                const message = messageInput.val().trim();
-                
-                if (message) {
-                    sendButton.prop('disabled', true);
-                    
-                    $.post('send_message.php', { message: message }, function(response) {
-                        if (response.success) {
-                            messageInput.val('');
-                            addMessage({
-                                message: message,
-                                timestamp: new Date().toISOString()
-                            }, true);
-                        }
-                        sendButton.prop('disabled', false);
-                    });
-                }
-            });
-
-            // Auto-resize textarea
-            messageInput.on('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
-            });
-
-            // Handle Enter key
-            messageInput.on('keypress', function(e) {
-                if (e.which === 13 && !e.shiftKey) {
-                    e.preventDefault();
-                    messageForm.submit();
-                }
-            });
-        });
-    </script>
+    <script src="/LivelihoodMonitoringSystem/dist/js/chat.js"></script>
 </body>
-</html> 
+
+</html>

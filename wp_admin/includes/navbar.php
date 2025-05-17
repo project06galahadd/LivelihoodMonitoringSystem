@@ -1,6 +1,21 @@
-<div class="preloader flex-column justify-content-center align-items-center" style="background:rgba(0,0,0,0.40)">
-  <img class="Aanimation__shakes" src="../dist/img/loader-3.gif" alt="AdminLTELogo" height="60" width="60">
+<div class="preloader flex-column justify-content-center align-items-center" style="background: rgba(0, 0, 0, 0.7); position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;">
+  <div class="text-center">
+    <img class="animation__shake mb-3" src="../dist/img/loader-3.gif" alt="Loading..." height="60" width="60">
+    <h5 class="text-white">Loading...</h5>
+  </div>
 </div>
+
+<script>
+  // Hide preloader when page is fully loaded
+  window.addEventListener('load', function() {
+    const preloader = document.querySelector('.preloader');
+    preloader.style.opacity = '0';
+    preloader.style.transition = 'opacity 0.5s ease';
+    setTimeout(() => {
+      preloader.style.display = 'none';
+    }, 500);
+  });
+</script>
 
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-dark sticky-top" style="border:none;background:#0652DD">

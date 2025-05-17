@@ -1,0 +1,131 @@
+<?php @include "includes/header.php"; ?>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+        <?php @include "includes/navbar.php"; ?>
+        <?php @include "includes/sidebar.php"; ?>
+        
+        <div class="content-wrapper">
+            <!-- Remove the preloader from here since we'll handle it with JavaScript -->
+            
+            <div class="content-wrapper">
+                <section class="content-header">
+                    <div class="container-fluid">
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <h1>ARCHIVED MEMBERS</h1>
+                            </div>
+                            <div class="col-sm-6">
+                                <ol class="breadcrumb float-sm-right">
+                                    <li class="breadcrumb-item"><a href="index.php">HOME</a></li>
+                                    <li class="breadcrumb-item"><a href="archive.php">ARCHIVES</a></li>
+                                    <li class="breadcrumb-item active">MEMBERS</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content">
+                    <div class="container-fluid">
+                        <?php
+                        if (isset($_SESSION['success'])) {
+                            echo "<div class='alert alert-success'>" . $_SESSION['success'] . "</div>";
+                            unset($_SESSION['success']);
+                        }
+                        if (isset($_SESSION['error'])) {
+                            echo "<div class='alert alert-danger'>" . $_SESSION['error'] . "</div>";
+                            unset($_SESSION['error']);
+                        }
+                        ?>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">List of Archived Members</h3>
+                            </div>
+                            <div class="card-body">
+                                <table id="memberArchiveTable" class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>RECORD NO</th>
+                                            <th>NAME</th>
+                                            <th>SEX</th>
+                                            <th>DOB</th>
+                                            <th>STATUS</th>
+                                            <th>ACTIONS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $sql = "SELECT * FROM tbl_members WHERE STATUS='ARCHIVED' ORDER BY LASTNAME ASC";
+                                        $query = $conn->query($sql);
+                                        $count = 1;
+                                        while ($row = $query->fetch_assoc()):
+                                        ?>
+                                            <tr id="row_<?= $row['MEMID']; ?>">
+                                                <td><?= $count++; ?></td>
+                                                <td><?= $row['RECORD_NUMBER']; ?></td>
+                                                <td><?= $row['LASTNAME'] . ', ' . $row['FIRSTNAME'] . ' ' . $row['MIDDLENAME']; ?></td>
+                                                <td><?= $row['GENDER']; ?></td>
+                                                <td><?= $row['DATE_OF_BIRTH']; ?></td>
+                                                <td><span class="text-secondary"><?= $row['STATUS']; ?></span></td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <a href="member_info.php?member_info=<?= $row['MEMID']; ?>" class="btn btn-info btn-sm" title="View">
+                                                            <i class="fa fa-eye"></i>
+                                                        </a>
+                                                        <button class="btn btn-success btn-sm" title="Unarchive" onclick="triggerArchiveModal(this)"
+                                                            data-id="<?= $row['MEMID']; ?>"
+                                                            data-type="member"
+                                                            data-name="<?= $row['LASTNAME'] . ', ' . $row['FIRSTNAME'] . ' ' . $row['MIDDLENAME']; ?>"
+                                                            data-status="ARCHIVED">
+                                                            <i class="fa fa-undo"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endwhile; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <?php @include "includes/footer.php"; ?>
+            <?php @include "includes/archive_modal.php"; ?>
+        </div>
+    </div>
+
+    <?php @include "includes/scripts.php"; ?>
+    <script>
+        $(function() {
+            // Initialize DataTable
+            $('#memberArchiveTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+            });
+
+            // Hide preloader when page is fully loaded
+            $(window).on('load', function() {
+                $('.preloader').fadeOut('slow');
+            });
+        });
+
+        function triggerArchiveModal(btn) {
+            var id = btn.getAttribute('data-id');
+            var type = btn.getAttribute('data-type');
+            var name = btn.getAttribute('data-name');
+            var status = btn.getAttribute('data-status');
+            openArchiveModal(id, type, name, status, window.location.pathname);
+        }
+    </script>
+</body>
+</html>

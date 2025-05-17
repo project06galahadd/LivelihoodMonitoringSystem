@@ -10,10 +10,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'MEMBER') {
 
 // Get user data
 $user_id = $_SESSION['user_id'];
-$username = $_SESSION['username'];
 $fullname = $_SESSION['fullname'];
 
 // Get user profile data
+$user_data = null;
 try {
     $stmt = $conn->prepare("SELECT * FROM tbl_users WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
@@ -88,9 +88,9 @@ try {
         .breadcrumb { background: transparent; padding: 0; }
         .breadcrumb-item a { color: var(--secondary-color); }
         .breadcrumb-item.active { color: var(--text-color); }
-        .card { border: none; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 1.5rem; background: #fff; }
-        .card-header { background: #fff; border-bottom: 1px solid #eee; padding: 1rem 1.5rem; border-radius: 10px 10px 0 0; }
-        .card-title { color: var(--text-color); font-weight: 600; margin: 0; }
+        .card { border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); background: #fff; }
+        .card-header { background: #fff; border-bottom: 1px solid #eee; border-radius: 10px 10px 0 0; }
+        .card-title { color: var(--text-color); font-weight: 600; }
         .news-card { transition: transform 0.3s ease; }
         .news-card:hover { transform: translateY(-5px); }
         .news-image { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem; }
@@ -110,80 +110,8 @@ try {
     </video>
 
     <div class="wrapper">
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button">
-                        <i class="fas fa-bars"></i>
-                    </a>
-                </li>
-            </ul>
-
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
-                        <i class="fas fa-user-circle mr-2"></i><?php echo htmlspecialchars($fullname); ?>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="profile.php">
-                            <i class="fas fa-user mr-2"></i>Profile
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="logout.php">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                        </a>
-                    </div>
-                </li>
-            </ul>
-        </nav>
-
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="home.php" class="brand-link">
-                <img src="/LivelihoodMonitoringSystem/dist/img/Logo.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">MSWD</span>
-            </a>
-
-            <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="home.php" class="nav-link">
-                                <i class="nav-icon fas fa-home"></i>
-                                <p>Home</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="household_case.php" class="nav-link">
-                                <i class="nav-icon fas fa-file-alt"></i>
-                                <p>Household Case Records</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="livelihood.php" class="nav-link">
-                                <i class="nav-icon fas fa-briefcase"></i>
-                                <p>Livelihood Programs</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="news.php" class="nav-link active">
-                                <i class="nav-icon fas fa-newspaper"></i>
-                                <p>News & Announcements</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="chat.php" class="nav-link">
-                                <i class="nav-icon fas fa-comments"></i>
-                                <p>Chat with Admin</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
-
-        <!-- Content Wrapper -->
+        <?php include "includes/navbar.php"; ?>
+        <?php include "includes/sidebar.php"; ?>
         <div class="content-wrapper">
             <div class="content-header">
                 <div class="container-fluid">
@@ -237,6 +165,7 @@ try {
                 </div>
             </section>
         </div>
+        <?php include "includes/footer.php"; ?>
     </div>
 
     <!-- Scripts -->

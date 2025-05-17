@@ -479,34 +479,91 @@ if (isset($conn)) $conn->close();
 <!-- Page specific script -->
 <script>
   $(function() {
-    // Initialize sidebar toggle
-    $('[data-widget="pushmenu"]').PushMenu('collapse');
-
-    // Initialize dropdowns
-    $('.dropdown-toggle').dropdown();
-
-    // Initialize treeview
+    // Initialize AdminLTE components
+    $('[data-widget="pushmenu"]').PushMenu('init');
     $('[data-widget="treeview"]').Treeview('init');
 
-    // Initialize navbar dropdown
+    // Initialize sidebar toggle with hamburger icon
+    $('.fa-bars, .sidebar-toggle').on('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      $('body').toggleClass('sidebar-collapse');
+      $('.main-sidebar').toggleClass('sidebar-collapse');
+    });
+
+    // Handle sidebar menu clicks
+    $('.nav-sidebar .nav-item.has-treeview > .nav-link').on('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var $parent = $(this).parent();
+      var $treeview = $parent.find('> .nav-treeview');
+      // Close other open menus
+      $('.nav-sidebar .nav-item.has-treeview').not($parent).removeClass('menu-open').find('> .nav-treeview').slideUp(200);
+      // Toggle current menu
+      $parent.toggleClass('menu-open');
+      $treeview.slideToggle(200);
+    });
+
+    // Handle regular menu item clicks
+    $('.nav-sidebar .nav-item:not(.has-treeview) > .nav-link').on('click', function(e) {
+      $('.nav-sidebar .nav-link').removeClass('active');
+      $(this).addClass('active');
+    });
+
+    // Handle submenu item clicks
+    $('.nav-sidebar .nav-treeview .nav-link').on('click', function(e) {
+      e.stopPropagation();
+      $('.nav-sidebar .nav-link').removeClass('active');
+      $(this).addClass('active');
+    });
+
+    // Initialize active state based on current page
+    var currentPage = window.location.pathname.split('/').pop();
+    $('.nav-sidebar .nav-link').each(function() {
+      var href = $(this).attr('href');
+      if (href && href.includes(currentPage)) {
+        $(this).addClass('active');
+        $(this).parents('.has-treeview').addClass('menu-open');
+        $(this).parents('.nav-treeview').show();
+      }
+    });
+
+    // Fix for menu items not being clickable
+    $('.nav-sidebar .nav-link, .nav-sidebar .nav-item, .nav-sidebar .nav-treeview').css({
+      'pointer-events': 'auto',
+      'cursor': 'pointer'
+    });
+
+    // Ensure proper event bubbling
+    $('.nav-sidebar .nav-treeview').on('click', function(e) {
+      e.stopPropagation();
+    });
+
+    // Fix for menu open state persistence
+    $('.nav-sidebar .nav-item.has-treeview').each(function() {
+      if ($(this).find('.nav-link.active').length) {
+        $(this).addClass('menu-open');
+        $(this).find('> .nav-treeview').show();
+      }
+    });
+
+    // Handle dropdown menus
+    $('.dropdown-toggle').dropdown();
     $('.nav-item.dropdown').on('show.bs.dropdown', function() {
       $(this).find('.dropdown-menu').first().stop(true, true).slideDown(200);
     });
-
     $('.nav-item.dropdown').on('hide.bs.dropdown', function() {
       $(this).find('.dropdown-menu').first().stop(true, true).slideUp(200);
     });
 
-    // Initialize sidebar menu
-    $('.nav-sidebar .nav-item').on('click', function() {
-      if ($(this).hasClass('has-treeview')) {
-        $(this).toggleClass('menu-open');
+    // Handle chat navigation
+    $('.chat-link').on('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const href = $(this).data('href');
+      if (href) {
+        window.location.href = href;
       }
-    });
-
-    // Initialize sidebar collapse
-    $('.sidebar-toggle').on('click', function() {
-      $('body').toggleClass('sidebar-collapse');
     });
   });
 </script>

@@ -1,12 +1,35 @@
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <!-- Add sidebar styles -->
   <style>
+    /* Add styles for hamburger menu */
+    .fa-bars, .sidebar-toggle {
+      cursor: pointer;
+      pointer-events: auto !important;
+      z-index: 1000;
+    }
+    
+    .fa-bars:hover, .sidebar-toggle:hover {
+      opacity: 0.8;
+    }
+    
+    /* Ensure sidebar toggle is always clickable */
+    .sidebar-toggle {
+      position: relative;
+      z-index: 1000;
+    }
+    
     .sidebar-dark-primary {
-      background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
+      background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
     }
     
     .brand-link {
       border-bottom: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .brand-link:hover {
+      background: rgba(255,255,255,0.05);
     }
     
     .brand-image {
@@ -20,6 +43,7 @@
     
     .user-panel {
       border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 15px;
     }
     
     .user-panel .image img {
@@ -33,27 +57,37 @@
     
     .nav-sidebar .nav-item {
       margin: 2px 0;
+      position: relative;
+      z-index: 1;
     }
     
     .nav-sidebar .nav-link {
       border-radius: 5px;
       margin: 0 8px;
       transition: all 0.3s ease;
+      position: relative;
+      z-index: 2;
+      cursor: pointer;
+      pointer-events: auto !important;
+      color: rgba(255,255,255,0.8);
     }
     
     .nav-sidebar .nav-link:hover {
       background: rgba(255,255,255,0.1);
       transform: translateX(5px);
+      color: #ffffff;
     }
     
     .nav-sidebar .nav-link.active {
-      background: #3498db;
+      background: #2c3e50;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      color: #ffffff;
     }
     
     .nav-sidebar .nav-link p {
       font-weight: 500;
       transition: all 0.3s ease;
+      margin: 0;
     }
     
     .nav-sidebar .nav-link:hover p {
@@ -61,18 +95,32 @@
     }
     
     .nav-sidebar .nav-treeview {
-      background: rgba(0,0,0,0.1);
-      border-radius: 5px;
-      margin: 5px 0;
+      display: none;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s ease-in-out;
+      background: rgba(0,0,0,0.2);
+      border-left: 3px solid rgba(255,255,255,0.1);
+      margin-left: 10px;
       padding: 5px 0;
     }
     
-    .nav-sidebar .nav-treeview .nav-link {
-      margin: 2px 8px;
+    .nav-sidebar .nav-item.menu-open > .nav-treeview {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
     }
     
-    .nav-sidebar .nav-treeview .nav-link p {
-      font-size: 13px;
+    .nav-sidebar .nav-treeview .nav-link {
+      padding-left: 20px;
+      opacity: 0.8;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-sidebar .nav-treeview .nav-link:hover {
+      opacity: 1;
+      background: rgba(255,255,255,0.1);
+      transform: translateX(3px);
     }
     
     .nav-sidebar .nav-icon {
@@ -80,16 +128,153 @@
       margin-right: 10px;
       width: 20px;
       text-align: center;
+      transition: transform 0.3s ease;
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .nav-sidebar .nav-link:hover .nav-icon {
+      color: #ffffff;
     }
     
     .nav-sidebar .nav-item.menu-open > .nav-link {
       background: rgba(255,255,255,0.1);
+      color: #ffffff;
     }
     
     .nav-sidebar .nav-item.menu-open > .nav-link i.right {
-      transform: rotate(-90deg);
+      transition: transform 0.3s ease;
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    .nav-sidebar .nav-item.menu-open > .nav-link i.right {
+      transform: translateY(-50%) rotate(-90deg);
+    }
+    
+    .nav-sidebar .nav-link i.right {
+      transition: transform 0.3s ease;
+    }
+    
+    .nav-sidebar .nav-link {
+      padding: 12px 15px;
+    }
+    
+    .nav-sidebar .nav-treeview .nav-link {
+      padding: 10px 15px;
+    }
+    
+    .nav-sidebar .nav-item.menu-open > .nav-link {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    
+    .nav-sidebar .nav-link.active {
+      background: #2c3e50;
+      color: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .nav-sidebar .nav-link.active i {
+      color: #fff;
+    }
+
+    /* Add styles for better interaction */
+    .nav-sidebar .nav-item.has-treeview > .nav-link {
+      position: relative;
+    }
+
+    .nav-sidebar .nav-item.has-treeview > .nav-link::after {
+      display: none;
+    }
+
+    /* Improve submenu visibility */
+    .nav-sidebar .nav-treeview {
+      background: rgba(0,0,0,0.2);
+      border-left: 3px solid rgba(255,255,255,0.1);
+    }
+
+    .nav-sidebar .nav-treeview .nav-link {
+      opacity: 0.8;
+      transition: all 0.3s ease;
+    }
+
+    .nav-sidebar .nav-treeview .nav-link:hover {
+      opacity: 1;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Add animation for menu transitions */
+    .nav-sidebar .nav-treeview {
+      transition: all 0.3s ease;
+    }
+
+    .nav-sidebar .nav-item.menu-open > .nav-treeview {
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Fix for clickable areas */
+    .nav-sidebar .nav-item,
+    .nav-sidebar .nav-link,
+    .nav-sidebar .nav-treeview {
+      pointer-events: auto !important;
+    }
+
+    /* Ensure proper z-index stacking */
+    .nav-sidebar .nav-item {
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav-sidebar .nav-link {
+      z-index: 2;
+    }
+
+    .nav-sidebar .nav-treeview {
+      z-index: 3;
+    }
+
+    /* Fix for menu item spacing */
+    .nav-sidebar .nav-item {
+      margin: 4px 0;
+    }
+
+    .nav-sidebar .nav-treeview .nav-item {
+      margin: 2px 0;
+    }
+
+    /* Improve submenu visibility */
+    .nav-sidebar .nav-treeview {
+      margin-left: 10px;
+      border-left: 2px solid rgba(255,255,255,0.1);
+    }
+
+    /* Add hover effect for menu items */
+    .nav-sidebar .nav-link:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateX(5px);
+    }
+
+    .nav-sidebar .nav-treeview .nav-link:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateX(3px);
     }
   </style>
+
+  <!-- Add sidebar script -->
+  <script src="../js/sidebar.js"></script>
 
   <!-- Brand Logo -->
   <a href="home.php" class="brand-link">

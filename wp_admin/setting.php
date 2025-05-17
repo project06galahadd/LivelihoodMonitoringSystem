@@ -17,7 +17,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"> HOME</li>
-              <li class="breadcrumb-item active"> SETTIINGS</li>
+              <li class="breadcrumb-item active"> SETTINGS</li>
             </ol>
           </div>
         </div>
@@ -85,29 +85,65 @@
 
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title"><i class="text-red fa fa-regular fa-location-dot fa-fade"></i> LOCATION MAP</h3>
+                <h3 class="card-title"><i class="text-primary fa fa-database"></i> DATABASE BACKUP</h3>
               </div>
               <div class="card-body">
-				          <div class="col-md-12">
-                  <div class="embed-responsive embed-responsive-16by9">
-					  <iframe class="embed-responsive-item" src="https://maps.google.com/maps?q=<?=$SYS_ADDRESS;?>
-					&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen></iframe>
-					</div>   
-                   </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label>Backup Options</label>
+                    <div class="custom-control custom-radio">
+                      <input type="radio" id="fullBackup" name="backupType" class="custom-control-input" value="full" checked>
+                      <label class="custom-control-label" for="fullBackup">Full Backup (Database + Files)</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                      <input type="radio" id="dbBackup" name="backupType" class="custom-control-input" value="database">
+                      <label class="custom-control-label" for="dbBackup">Database Only</label>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Backup Schedule</label>
+                    <select class="form-control" id="backupSchedule">
+                      <option value="manual">Manual Backup</option>
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Backup Retention</label>
+                    <select class="form-control" id="backupRetention">
+                      <option value="7">7 days</option>
+                      <option value="14">14 days</option>
+                      <option value="30">30 days</option>
+                      <option value="90">90 days</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Last Backup</label>
+                    <p class="text-muted" id="lastBackupTime">No backup performed yet</p>
+                  </div>
+                </div>
               </div>
-            <div class="card-footer">
-         
+              <div class="card-footer">
+                <button type="button" class="btn btn-primary btn-sm" id="createBackup">
+                  <i class="fa fa-download"></i> Create Backup
+                </button>
+                <button type="button" class="btn btn-info btn-sm" id="viewBackups">
+                  <i class="fa fa-list"></i> View Backups
+                </button>
+              </div>
             </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->             
+            <!-- /.card -->
 
           </div>
-		  
+
           <div class="col-md-8">
             <div class="card">
               <div class="card-header">
-              <h3 class="card-title"> 
+              <h3 class="card-title">
                   <i class="fa fa-solid fa-memo-circle-info"></i> Set Default
               </h3>
 			      	<div class="card-tools">
@@ -130,7 +166,7 @@
                             <input type="text" class="form-control" value="<?=$SYS_NAME;?>" name="SYS_NAME" placeholder="NAME" required>
                         </div>
                     </div>
-                    
+
                     <div class="col-sm-6">
                        <div class="form-group">
                              <label for="lastname" class="control-label">SHORT NAME</label>
@@ -164,13 +200,10 @@
                         NO
                         </label>
                       </div>
-                      
                     </div>
                   </div>
-
                 </div><!----row-->
                </form>
-
               </div>
               <div class="card-footer border-success">
                 <button type="submit" form="form-system-update" name="form-system-update" class="btn bg-teal btn-sm"> <i class="fa fa-light fa-pen-to-square"></i> UPDATE</button>
@@ -207,6 +240,134 @@
           document.getElementById('secondsettingformFile').value = null;
           secondsettingframe.src = "";
       }
+  </script>
+
+  <!-- Backup System Scripts -->
+  <script>
+    $(document).ready(function() {
+      // Create Backup
+      $('#createBackup').click(function() {
+        const backupType = $('input[name="backupType"]:checked').val();
+        const schedule = $('#backupSchedule').val();
+        const retention = $('#backupRetention').val();
+
+        $.ajax({
+          url: 'backup_create.php',
+          type: 'POST',
+          data: {
+            type: backupType,
+            schedule: schedule,
+            retention: retention
+          },
+          beforeSend: function() {
+            $('#createBackup').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Creating Backup...');
+          },
+          success: function(response) {
+            const data = JSON.parse(response);
+            if(data.success) {
+              toastr.success('Backup created successfully!');
+              $('#lastBackupTime').text(new Date().toLocaleString());
+            } else {
+              toastr.error(data.message || 'Failed to create backup');
+            }
+          },
+          error: function() {
+            toastr.error('An error occurred while creating backup');
+          },
+          complete: function() {
+            $('#createBackup').prop('disabled', false).html('<i class="fa fa-download"></i> Create Backup');
+          }
+        });
+      });
+
+      // View Backups
+      $('#viewBackups').click(function() {
+        $.ajax({
+          url: 'backup_list.php',
+          type: 'GET',
+          success: function(response) {
+            const data = JSON.parse(response);
+            if(data.success) {
+              // Show backups in a modal
+              showBackupsModal(data.backups);
+            } else {
+              toastr.error(data.message || 'Failed to load backups');
+            }
+          },
+          error: function() {
+            toastr.error('An error occurred while loading backups');
+          }
+        });
+      });
+
+      function showBackupsModal(backups) {
+        let html = '<div class="table-responsive"><table class="table table-bordered">';
+        html += '<thead><tr><th>Date</th><th>Type</th><th>Size</th><th>Actions</th></tr></thead>';
+        html += '<tbody>';
+
+        backups.forEach(backup => {
+          html += `<tr>
+            <td>${backup.date}</td>
+            <td>${backup.type}</td>
+            <td>${backup.size}</td>
+            <td>
+              <button class="btn btn-sm btn-info" onclick="downloadBackup('${backup.id}')">
+                <i class="fa fa-download"></i>
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="deleteBackup('${backup.id}')">
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          </tr>`;
+        });
+
+        html += '</tbody></table></div>';
+
+        Swal.fire({
+          title: 'Backup History',
+          html: html,
+          width: '800px',
+          showCloseButton: true,
+          showConfirmButton: false
+        });
+      }
+    });
+
+    function downloadBackup(id) {
+      window.location.href = `backup_download.php?id=${id}`;
+    }
+
+    function deleteBackup(id) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "This backup will be permanently deleted!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: 'backup_delete.php',
+            type: 'POST',
+            data: { id: id },
+            success: function(response) {
+              const data = JSON.parse(response);
+              if(data.success) {
+                toastr.success('Backup deleted successfully');
+                $('#viewBackups').click(); // Refresh the list
+              } else {
+                toastr.error(data.message || 'Failed to delete backup');
+              }
+            },
+            error: function() {
+              toastr.error('An error occurred while deleting backup');
+            }
+          });
+        }
+      });
+    }
   </script>
 </body>
 </html>

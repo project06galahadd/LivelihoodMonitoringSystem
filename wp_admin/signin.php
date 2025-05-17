@@ -3,19 +3,20 @@ session_start();
 // include "../header.php"; // Removed to prevent blank screen
 
 // Check if already logged in
-if(isset($_SESSION['admin'])) {
+if (isset($_SESSION['admin'])) {
     header('location: home.php?dashboard=home');
     exit();
 }
 
 // Handle error messages
-if(isset($_GET['error'])) {
+if (isset($_GET['error'])) {
     $_SESSION['error'] = 'Invalid username or password';
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,14 +32,18 @@ if(isset($_GET['error'])) {
         }
 
         body {
-            background: linear-gradient(135deg, #0d47a1 0%, #1a237e 100%);
-            min-height: 100vh;
+            font-family: 'Source Sans Pro', sans-serif;
+            background: none;
+            position: relative;
+            overflow-x: hidden;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
-            padding: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a237e;
+            /* Fallback color */
         }
 
         .admin-login-container {
@@ -50,6 +55,8 @@ if(isset($_GET['error'])) {
             max-width: 350px;
             animation: slideIn 0.5s ease-out;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
         }
 
         .admin-header {
@@ -199,6 +206,7 @@ if(isset($_GET['error'])) {
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -206,9 +214,19 @@ if(isset($_GET['error'])) {
         }
 
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-3px); }
-            75% { transform: translateX(3px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-3px);
+            }
+
+            75% {
+                transform: translateX(3px);
+            }
         }
 
         @media (max-width: 480px) {
@@ -216,10 +234,40 @@ if(isset($_GET['error'])) {
                 padding: 20px;
             }
         }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 35, 126, 0.85);
+            /* Matching admin theme color */
+            z-index: -1;
+            pointer-events: none;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
+    <!-- Video Background -->
+    <video class="video-background" autoplay muted loop>
+        <source src="../videos/LivelihoodStreet2.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="overlay"></div>
     <div class="admin-login-container">
         <div class="admin-header">
             <div class="admin-logo-container">
@@ -232,7 +280,7 @@ if(isset($_GET['error'])) {
         <?php if (isset($_SESSION['error'])): ?>
             <div class="admin-error">
                 <i class="fas fa-exclamation-circle"></i>
-                <?php 
+                <?php
                 echo $_SESSION['error'];
                 unset($_SESSION['error']);
                 ?>
@@ -244,7 +292,7 @@ if(isset($_GET['error'])) {
                 <i class="fas fa-user"></i>
                 <input type="text" name="USERNAME" class="admin-input" placeholder="Username" required>
             </div>
-            
+
             <div class="admin-form-group">
                 <i class="fas fa-lock"></i>
                 <input type="password" name="PASSWORD" class="admin-input" placeholder="Password" required>
@@ -273,4 +321,5 @@ if(isset($_GET['error'])) {
         });
     </script>
 </body>
+
 </html>
